@@ -21,6 +21,7 @@ def get_all_possiblepos_val(p_numlist: List) -> List:
         for x3, str_x3 in L3:
             for x4, str_x4 in L4:
                 all_possiblepos_val.update(pos_val((x3, str_x3), (x4, str_x4)))
+    # print(len(all_possiblepos_val))
     return list(all_possiblepos_val)
 
 
