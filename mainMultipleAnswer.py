@@ -6,30 +6,20 @@ import time
 
 operand = ['+', '-', '*', '/']
 startTime = time.time()
-result = 0
 
 
 def get_all_possible_val(p_numlist: List) -> List:
-    all_possiblepos_val = dict()
+    all_possiblepos_val = set()
     for nums in p_numlist:
         a, b, c, d = nums
         L1 = pos_val((a, str(a)), (b, str(b)))
         L2 = pos_val((c, str(c)), (d, str(d)))
         for x1, str_x1 in L1:
             for x2, str_x2 in L2:
-                possible = pos_val((x1, str_x1), (x2, str_x2))
-                val, equ = findClosestValue(possible, result)
-                if val not in all_possiblepos_val:
-                    all_possiblepos_val[val] = equ
-                elif len(equ) < len(all_possiblepos_val[val]):
-                    all_possiblepos_val[val] = equ
-                if val == result and len(equ) <= 15 and "√" not in equ:
-                    print("found way after: " +
-                          str(len(all_possiblepos_val)) + " ways")
-                    return [(val, equ)]
+                all_possiblepos_val.update(pos_val((x1, str_x1), (x2, str_x2)))
 
     print("all possible way: " + str(len(all_possiblepos_val)) + " ways")
-    return list(all_possiblepos_val.items())
+    return list(all_possiblepos_val)
 
 
 def pos_val(num1: tuple(), num2: tuple()) -> tuple():
@@ -59,25 +49,14 @@ def pos_val(num1: tuple(), num2: tuple()) -> tuple():
                                 f'-{str1}'), (temp2, f'root|{str2}|'))
 
     dic = dict()
-    perfect_equ = list(filter(lambda x: x[0] == result, pos_value))
-    if len(perfect_equ) == 0:
-        for val, string in pos_value:
-            if abs(val - result) < 20:
-                if val not in dic:
-                    dic[val] = string
-                elif len(string) < len(dic[val]):
-                    dic[val] = string
+    for val, string in pos_value:
+        if val not in dic:
+            dic[val] = string
+        elif len(string) < len(dic[val]):
+            dic[val] = string
 
-        pos_value = list(dic.items())
-        return pos_value
-    else:
-        ansEqu = perfect_equ[0][1]
-        for _, equ in perfect_equ:
-            if len(equ) < len(ansEqu):
-                ansEqu = equ
-            if len(ansEqu) <= 20:
-                return [(result, ansEqu)]
-        return [(result, ansEqu)]
+    pos_value = list(dic.items())
+    return pos_value
 
 
 def pos_val_basic(num1: tuple(), num2: tuple()) -> tuple():
@@ -101,55 +80,50 @@ def pos_val_basic(num1: tuple(), num2: tuple()) -> tuple():
     return pos_value
 
 
-def findClosestValue(all_possible_val: List, target: int) -> tuple:
-    maxx = 1e9
-    ansVal = 0
-    ansEqu = ''
-    for val, equ in all_possible_val:
-        if abs(val - target) < maxx:
-            maxx = abs(val - target)
-            ansVal = val
-            ansEqu = equ
-    ansEqu = ansEqu.replace('-+', '-').replace('--', '+')\
-        .replace('+-', '-').replace('|(', '|').replace(')|', '|').replace('root', '√')
-    return (ansVal, ansEqu)
-
-
-def removeParenthesis(equ: str) -> str:
-    val, equ = equ
-    parenthesis = []
-    remove = True
-    for i in range(len(equ)):
-        if len(parenthesis) != 0:
-            if parenthesis[0] != 0:
-                remove = False
-                break
-        if equ[i] == '(':
-            parenthesis.append(i)
-        elif equ[i] == ')':
-            parenthesis.pop(-1)
-    if remove:
-        equ = equ[1:-1]
-    return (val, equ)
-
-
 def main():
-    global result
     numlist = [randint(0, 9) for _ in range(4)]
     while(numlist.count(0) >= 2):
         numlist = [randint(0, 9) for _ in range(4)]
     result = randint(0, 2400)//100
 
     p_numlist = list(permutations(numlist))
+
     prototype = f'{numlist[0]} {numlist[1]} {numlist[2]} {numlist[3]} = {result}'
     print(prototype)
 
     all_possible = get_all_possible_val(p_numlist)
-    best_way = findClosestValue(all_possible, result)
-    best_way = removeParenthesis(best_way)
-    val, equ = best_way
+    best_way = [list(x) for x in sorted(
+        all_possible, key=lambda x: abs(x[0]-result))[0:100]]
 
-    print(f'best way: {equ} = {val}')
+    for i in range(len(best_way)):
+        best_way[i][1] = best_way[i][1].replace('-+', '-')
+        best_way[i][1] = best_way[i][1].replace('--', '+')
+        best_way[i][1] = best_way[i][1].replace('+-', '-')
+        best_way[i][1] = best_way[i][1].replace('|(', '|')
+        best_way[i][1] = best_way[i][1].replace(')|', '|')
+
+    best_way.sort(key=lambda x: (abs(
+        x[0]-result),  len(x[1]), x[1].count('('), x[1].count('root'), x[1].count('-')))
+
+    for i in range(len(best_way[:10])):
+        best_way[i][1] = best_way[i][1].replace('root', '√')
+        val, equ = best_way[i]
+        parenthesis = []
+        remove = True
+        for j in range(len(equ)):
+            if len(parenthesis) != 0:
+                if parenthesis[0] != 0:
+                    remove = False
+                    break
+            if equ[j] == '(':
+                parenthesis.append(j)
+            elif equ[j] == ')':
+                parenthesis.pop(-1)
+        if remove:
+            best_way[i][1] = equ[1:-1]
+
+    for way in best_way[:5]:
+        print(way)
     print(f'cost time: {time.time()-startTime}')
 
 
