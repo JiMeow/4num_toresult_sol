@@ -9,7 +9,16 @@ startTime = time.time()
 result = 0
 
 
-def get_all_possible_val(p_numlist: List) -> List:
+def get_all_possible_val(p_numlist: List) -> List[tuple]:
+    """
+    get all possible value from 4 number and 4 operand with priority order (1, 2, 3, 4) not like (1, 3, 2, 4)
+
+    Args:
+        p_numlist (List): list of 4 number
+
+    Returns:
+        List: list of all posiblevalue and string for represent value
+    """
     all_possiblepos_val = dict()
     for nums in p_numlist:
         a, b, c, d = nums
@@ -32,7 +41,17 @@ def get_all_possible_val(p_numlist: List) -> List:
     return list(all_possiblepos_val.items())
 
 
-def pos_val(num1: tuple(), num2: tuple()) -> tuple():
+def pos_val(num1: tuple(), num2: tuple()) -> List[tuple]:
+    """
+    get all possible value from two number
+
+    Args:
+        num1 (tuple(float, string)): value of num1 and string for represent num1
+        num2 (tuple(float, string)): value of num2 and string for represent num2
+
+    Returns:
+        list[tuple(float, string)]: all possible value and string for represent value
+    """
     pos_value = []
 
     num1, str1 = num1
@@ -80,7 +99,17 @@ def pos_val(num1: tuple(), num2: tuple()) -> tuple():
         return [(result, ansEqu)]
 
 
-def pos_val_basic(num1: tuple(), num2: tuple()) -> tuple():
+def pos_val_basic(num1: tuple(), num2: tuple()) -> List[tuple]:
+    """
+    get all possible value from two number with basic operand (+, -, *, /)
+
+    Args:
+        num1 (tuple(float, string)): value of num1 and string for represent num1
+        num2 (tuple(float, string)): value of num2 and string for represent num2
+
+    Returns:
+        list[tuple(float, string)]: all possible value and string for represent value
+    """
     pos_value = []
     num1, str1 = num1
     num2, str2 = num2
@@ -102,6 +131,17 @@ def pos_val_basic(num1: tuple(), num2: tuple()) -> tuple():
 
 
 def findClosestValue(all_possible_val: List, target: int) -> tuple:
+    """
+    find closest value from all possible value
+
+    Args:
+        all_possible_val (List): list of all possible value
+        target (int): target value
+
+    Returns:
+        tuple: closest value and string for represent value
+
+    """
     maxx = 1e9
     ansVal = 0
     ansEqu = ''
@@ -115,7 +155,16 @@ def findClosestValue(all_possible_val: List, target: int) -> tuple:
     return (ansVal, ansEqu)
 
 
-def removeParenthesis(equ: str) -> str:
+def removeParenthesis(equ: str) -> tuple:
+    """
+    Remove unnecessary parenthesis
+
+    Args:
+        equ (str): equation
+
+    Returns:
+        tuple: value and equation
+    """
     val, equ = equ
     parenthesis = []
     remove = True
@@ -150,7 +199,7 @@ def main():
     val, equ = best_way
 
     print(f'best way: {equ} = {val}')
-    print(f'cost time: {time.time()-startTime}')
+    print(f'cost time: {time.time()-startTime:.2f}s')
 
 
 if __name__ == "__main__":
